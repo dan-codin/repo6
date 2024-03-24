@@ -29,47 +29,77 @@ size_t Size(void* ptr)
 // implements heap sort
 // extraMemoryAllocated counts bytes of memory allocated
 void heapSort(int arr[], int n)
-{
+{ 
+	
+	// Function to swap the position of two elements in an array
+	void swap(int *a, int *b)
+	{   
+		int tempvar = *a;
+    	*a = *b;
+   		*b = tempvar;
+ 	}
+  
+  	void heapify(int arr[], int n, int i) {
+    // Finding the greatest among root, leftSide child, and rightSide child of the tree
+    	int greatest = i;
+    	int leftSide = 2 * i + 1;
+    	int rightSide = 2 * i + 2;
+  
+    	if (leftSide < n && arr[leftSide] > arr[greatest])
+      	greatest = leftSide;
+  
+    	if (rightSide < n && arr[rightSide] > arr[greatest])
+      	greatest = rightSide;
+  
+    	// Swap and continue heapifying if the root is not the greatest
+    	if (greatest != i) {
+      		swap(&arr[i], &arr[greatest]);
+      		heapify(arr, n, greatest);
+   		}
+  	}
+    // Build max heap
+    for (int i = n / 2 - 1; i >= 0; i--)
+      heapify(arr, n, i);
+  
+
+    for (int i = n - 1; i >= 0; i--) {
+      swap(&arr[0], &arr[i]);
+  
+      heapify(arr, i, 0);
+    }
 }
 
 // implement merge sort
 // extraMemoryAllocated counts bytes of extra memory allocated
 void mergeSort(int pData[], int l, int r)
 {
-	if(l < r){
-
-		//sorting array
-		//find the middle of pData array and assign the value to variable m
-		int m = (l + r)/2;
-
-		//recursive call
+	if (l < r)
+	{
+		// get the mid point
+		int m = (l+r)/2;
+		// Sort first and second halves
 		mergeSort(pData, l, m);
 		mergeSort(pData, m+1, r);
 
-		//merge array
-		// variables i, j, and k are counters
+		//
 		int i, j, k;
-		//Number of elements in two subarrays after pData is split at m
-		int n1 = m-l+1;
-		int n2 = r-m;
-
-		// create temp arrays
-		int *L = (int*)Alloc(sizeof(int)* n1);
-		int *R = (int*)Alloc(sizeof(int) * n2);
-
-		//copy data to temp arrays L and R
-		for ( i = 0; i < n1; i++)
-			L[i] = pData[l+i];
-		for ( j = 0; j < n2; i++)
-			R[j] = pData[m + 1 + j];
-
-		//merge the temp arrays back
-		i = 0;
-		j = 0;
-		k = 0;
-		while(i < n1 && j < n2){
-			if(L[i]<= R[j]){
-				pData[k]= L[i];
+		int n1 = m - l + 1;
+		int n2 = r - m;
+		/* create temp arrays */
+		int *L = (int*)Alloc(n1*sizeof(int));
+		int *R = (int*)Alloc(n2*sizeof(int));
+		/* Copy data to temp arrays L[] and R[] */
+		for (i = 0; i < n1; i++)
+			L[i] = pData[l + i];
+		for (j = 0; j < n2; j++)
+			R[j] = pData[m + 1+ j];
+		/* Merge the temp arrays back into arr[l..r]*/
+		i = 0; // Initial index of first subarray
+		j = 0; // Initial index of second subarray
+		k = l; // Initial index of merged subarray
+		while (i < n1 && j < n2){
+			if (L[i] <= R[j]){
+				pData[k] = L[i];
 				i++;
 			}
 			else{
@@ -78,25 +108,23 @@ void mergeSort(int pData[], int l, int r)
 			}
 			k++;
 		}
-		// copy remaining elements of L if any
-		while(i < n1){
+		/* Copy the remaining elements of L[], if there
+		are any */
+		while (i < n1){
 			pData[k] = L[i];
 			i++;
 			k++;
 		}
-
-		// copy remaining elements ofR if any
-		while(j < n2){
+		/* Copy the remaining elements of R[], if there
+		are any */
+		while (j < n2){
 			pData[k] = R[j];
 			j++;
 			k++;
 		}
-
-		//free subarrays
 		DeAlloc(L);
 		DeAlloc(R);
-
-		
+			
 	}
 
 }
@@ -282,14 +310,14 @@ int main(void)
 		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
 		extraMemoryAllocated = 0;
 		start = clock();
-		mergeSort(pDataCopy, 0, dataSz - 1);
+		mergeSort(pDataCopy, 0, 200 - 1);
 		end = clock();
 		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 		printf("\truntime\t\t\t: %.1lf\n",cpu_time_used);
 		printf("\textra memory allocated\t: %d\n",extraMemoryAllocated);
 		printArray(pDataCopy, dataSz);
 
-                printf("Heap Sort:\n");
+        printf("Heap Sort:\n");
 		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
 		extraMemoryAllocated = 0;
 		start = clock();
